@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#090d16" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <title>My Fitness Era / Our Fitness Era | Your journey, your pace, your era</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts: Inter & Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            400: '#4ade80',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            900: '#14532d',
+                        },
+                        dark: {
+                            900: '#090d16',
+                            800: '#111827',
+                            700: '#1f2937',
+                            600: '#374151',
+                        }
+                    }
+                }
+            }
+        };
+    </script>
+
+    <style>
+        .avatar-choice { border: 2px solid rgba(148,163,184,.28); border-radius: 14px; overflow: hidden; aspect-ratio: 1; transition: .15s; }
+  .avatar-choice:focus, .avatar-choice:hover { border-color: #22c55e; transform: translateY(-1px); }
+  .avatar-choice img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .profile-avatar-img { width: 2rem; height: 2rem; object-fit: cover; border-radius: 9999px; display: block; }
+  .progress-ring-circle {
+            transition: stroke-dashoffset 0.75s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(156, 163, 175, 0.32);
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(156, 163, 175, 0.55);
+        }
+
+        @keyframes float-crown {
+            0%, 100% { transform: translateY(0px) rotate(-3deg); }
+            50% { transform: translateY(-3px) rotate(3deg); }
+        }
+        .crown-float {
+            animation: float-crown 2.5s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 dark:bg-dark-900 dark:text-slate-100 min-h-screen transition-colors duration-300 antialiased selection:bg-brand-500 selection:text-white">
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2.5 max-w-sm w-full pointer-events-none px-4 sm:px-0"></div>
+
+    <!-- Floating Share App / Invite Partner Button -->
+    <button id="share-app-btn" onclick="shareFitnessEraApp()" class="fixed bottom-5 left-5 z-40 flex items-center gap-2 bg-slate-900/95 dark:bg-white/95 text-white dark:text-slate-950 border border-slate-700/60 dark:border-slate-200 px-4 py-2.5 rounded-full text-xs font-bold shadow-xl backdrop-blur-md hover:scale-105 active:scale-95 transition">
+        <i data-lucide="share-2" class="w-4 h-4"></i>
+        <span>Share App</span>
+    </button>
+
+    <!-- Top Navigation Bar -->
+    <header class="sticky top-0 z-30 backdrop-blur-md bg-white/85 dark:bg-dark-900/85 border-b border-slate-200 dark:border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 min-h-[4rem] flex flex-wrap items-center justify-between gap-2.5">
+            <!-- Brand -->
+            <div class="flex items-center gap-3">
+                <div id="brand-logo-icon" class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-emerald-400 flex items-center justify-center text-white shadow-lg shadow-brand-500/30 transition-all duration-300">
+                    <i data-lucide="activity" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h1 id="brand-title" class="font-display font-bold text-lg sm:text-xl tracking-tight">
+                            My Fitness <span class="text-brand-500">Era</span>
+                        </h1>
+                        <span id="room-sync-badge" class="hidden items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                            <span id="room-sync-label">ERA-8492</span>
+                        </span>
+                    </div>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 font-medium hidden md:block">Your journey, your pace, your era</p>
+                </div>
+            </div>
+
+            <!-- Center Mode Switcher & Partner Switcher -->
+            <div class="order-3 lg:order-2 w-full lg:w-auto flex flex-wrap items-center justify-center gap-2">
+                <div class="inline-flex items-center p-1 rounded-2xl bg-slate-100 dark:bg-dark-800 border border-slate-200 dark:border-slate-700/80" role="group" aria-label="App Mode Switcher">
+                    <button id="mode-btn-individual" onclick="switchAppMode('individual')" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all">
+                        <i data-lucide="user" class="w-3.5 h-3.5"></i>
+                        <span>Individual</span>
+                    </button>
+                    <button id="mode-btn-couples" onclick="switchAppMode('couples')" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all">
+                        <i data-lucide="heart" class="w-3.5 h-3.5"></i>
+                        <span>Couples</span>
+                    </button>
+                </div>
+
+                <!-- Couples Mode Active Partner Switcher -->
+                <div id="partner-switcher-wrap" class="hidden items-center p-1 rounded-2xl bg-slate-100 dark:bg-dark-800 border border-slate-200 dark:border-slate-700/80">
+                    <span class="text-[11px] font-semibold text-slate-400 px-2 hidden xl:inline">Active:</span>
+                    <button id="switch-btn-A" onclick="setActivePartner('A')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all">
+                        <span id="header-avatar-A">⚡</span>
+                        <span id="header-name-A">Alex</span>
+                    </button>
+                    <button id="switch-btn-B" onclick="setActivePartner('B')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all">
+                        <span id="header-avatar-B">🔥</span>
+                        <span id="header-name-B">Sam</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right Controls -->
+            <div class="order-2 lg:order-3 flex items-center gap-2 sm:gap-2.5">
+                <span id="net-status-badge" class="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Online
+                </span>
+
+                <div class="flex items-center gap-1.5 bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 px-3 py-1.5 rounded-full text-xs sm:text-sm font-semibold">
+                    <i data-lucide="flame" class="w-4 h-4 fill-amber-500 text-amber-500"></i>
+                    <span id="streak-count">12</span>
+                    <span id="streak-label" class="hidden sm:inline">Day Streak</span>
+                </div>
+
+                <button id="couple-profiles-btn" onclick="openCoupleModal()" aria-label="Couple Profiles and Room Sync" class="hidden p-2.5 rounded-xl bg-slate-100 dark:bg-dark-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-dark-700 border border-transparent dark:border-slate-700/60 transition" title="Couple Profiles & Room Sync">
+                    <i data-lucide="users" class="w-4 h-4 sm:w-5 sm:h-5"></i>
+                </button>
+
+                <button id="theme-toggle" onclick="toggleTheme()" aria-label="Toggle Theme" class="p-2.5 rounded-xl bg-slate-100 dark:bg-dark-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-dark-700 border border-transparent dark:border-slate-700/60 transition" title="Toggle Theme">
+                    <i data-lucide="sun" class="w-4 h-4 sm:w-5 sm:h-5 hidden dark:block"></i>
+                    <i data-lucide="moon" class="w-4 h-4 sm:w-5 sm:h-5 block dark:hidden"></i>
+                </button>
+
+                <button onclick="openGoalModal()" class="flex items-center gap-1.5 bg-brand-600 hover:bg-brand-500 text-white px-3.5 sm:px-4 py-2 rounded-xl font-medium text-xs sm:text-sm shadow-lg shadow-brand-600/25 transition transform active:scale-95">
+                    <i data-lucide="plus" class="w-4 h-4"></i>
+                    <span>New Goal</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Dashboard -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 pb-20 space-y-8">
+
+        <!-- Individual Mode Banner -->
+        <div id="individual-couples-banner" class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-5 py-3.5 rounded-2xl bg-gradient-to-r from-brand-500/10 via-emerald-500/5 to-rose-500/10 border border-brand-500/20">
+            <div class="flex items-center gap-3 text-xs sm:text-sm">
+                <span class="w-8 h-8 rounded-xl bg-rose-500/15 text-rose-400 flex items-center justify-center shrink-0">
+                    <i data-lucide="heart-handshake" class="w-4 h-4"></i>
+                </span>
+                <div>
+                    <span class="font-bold text-slate-800 dark:text-slate-100">Individual Mode Active</span>
+                    <span class="text-slate-500 dark:text-slate-400 hidden sm:inline"> — Switch to Couples Mode for head-to-head XP duels, co-op goals &amp; partner nudges.</span>
+                </div>
+            </div>
+            <button onclick="switchAppMode('couples')" class="self-start sm:self-auto px-3.5 py-1.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-xs hover:opacity-90 transition shrink-0">
+                Switch to Couples Mode →
+            </button>
+        </div>
+
+        <!-- COUPLES SHOWDOWN ARENA -->
+        <section id="couples-showdown-section" class="hidden relative overflow-hidden rounded-3xl bg-white dark:bg-dark-800 border border-slate-200/80 dark:border-slate-800 shadow-lg p-6 sm:p-8 space-y-6">
+            <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                <div class="space-y-2.5 max-w-xl">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-500 text-xs font-bold uppercase tracking-wider">
+                        <i data-lucide="swords" class="w-3.5 h-3.5"></i>
+                        <span>Couples Weekly Showdown</span>
+                    </div>
+                    <h2 id="arena-leader-headline" class="font-display font-extrabold text-2xl sm:text-3xl tracking-tight">
+                        Alex leads by 120 XP!
+                    </h2>
+
+                    <div class="pt-1 flex flex-wrap items-center gap-2">
+                        <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                            <i data-lucide="trophy" class="w-3.5 h-3.5 text-amber-400"></i> Weekly Stake:
+                        </span>
+                        <div id="stakes-display-wrap" class="inline-flex items-center gap-2 bg-slate-100 dark:bg-dark-900/90 border border-slate-200 dark:border-slate-700 px-3 py-1.5 rounded-xl text-xs font-medium text-slate-700 dark:text-slate-200">
+                            <span id="stakes-text">Loser cooks Friday dinner &amp; gives a 20-min massage</span>
+                            <button onclick="toggleEditStakes(true)" class="text-slate-400 hover:text-brand-400 transition" title="Edit Weekly Stake">
+                                <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
+                        <div id="stakes-edit-wrap" class="hidden items-center gap-1.5 w-full sm:w-auto">
+                            <input type="text" id="stakes-input" class="bg-slate-100 dark:bg-dark-900 border border-brand-500 rounded-xl px-3 py-1.5 text-xs w-full sm:w-80 focus:outline-none" placeholder="Enter weekly stake..." />
+                            <button onclick="saveStakes()" class="px-3 py-1.5 rounded-xl bg-brand-500 text-slate-950 font-bold text-xs">Save</button>
+                            <button onclick="toggleEditStakes(false)" class="px-2.5 py-1.5 rounded-xl bg-slate-200 dark:bg-dark-700 text-slate-500 dark:text-slate-300 text-xs">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- XP Leaderboard & Tug-of-War Bar -->
+                <div class="flex-1 max-w-2xl bg-slate-50 dark:bg-dark-900/75 rounded-2xl p-4 sm:p-5 border border-slate-200/70 dark:border-slate-800">
+                    <div class="flex items-center justify-between gap-3 mb-3">
+                        <div class="flex items-center gap-2.5">
+                            <div id="arena-badge-A" class="relative w-11 h-11 rounded-2xl flex items-center justify-center text-xl shadow-md border-2 transition-all" style="background-color: rgba(56,189,248,0.15); border-color: #38bdf8;">
+                                <span id="arena-avatar-A">⚡</span>
+                                <span id="crown-A" class="hidden absolute -top-3 -right-2 text-base crown-float">👑</span>
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-1.5">
+                                    <span id="arena-name-A" class="font-display font-bold text-sm sm:text-base">Alex</span>
+                                    <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-200 dark:bg-dark-800 text-slate-500 dark:text-slate-400">🔥 14d</span>
+                                </div>
+                                <div id="xp-A" class="font-display font-extrabold text-lg sm:text-xl tabular-nums" style="color: #38bdf8;">1,240 XP</div>
+                            </div>
+                        </div>
+
+                        <span class="text-[10px] font-extrabold uppercase tracking-widest px-2.5 py-1 rounded-lg bg-slate-200/80 dark:bg-dark-800 text-slate-500 dark:text-slate-400">VS</span>
+
+                        <div class="flex items-center gap-2.5 text-right">
+                            <div>
+                                <div class="flex items-center justify-end gap-1.5">
+                                    <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-200 dark:bg-dark-800 text-slate-500 dark:text-slate-400">🔥 12d</span>
+                                    <span id="arena-name-B" class="font-display font-bold text-sm sm:text-base">Sam</span>
+                                </div>
+                                <div id="xp-B" class="font-display font-extrabold text-lg sm:text-xl tabular-nums" style="color: #fb7185;">1,120 XP</div>
+                            </div>
+                            <div id="arena-badge-B" class="relative w-11 h-11 rounded-2xl flex items-center justify-center text-xl shadow-md border-2 transition-all" style="background-color: rgba(251,113,133,0.15); border-color: #fb7185;">
+                                <span id="arena-avatar-B">🔥</span>
+                                <span id="crown-B" class="hidden absolute -top-3 -left-2 text-base crown-float">👑</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="relative w-full h-4 rounded-full bg-slate-200 dark:bg-dark-800 overflow-hidden flex p-0.5">
+                        <div id="tug-bar-A" class="h-full rounded-l-full transition-all duration-700 flex items-center justify-start pl-2 text-[10px] font-extrabold text-slate-950" style="width: 53%; background-color: #38bdf8;">53%</div>
+                        <div class="w-1 h-full bg-white dark:bg-dark-900 z-10"></div>
+                        <div id="tug-bar-B" class="h-full rounded-r-full transition-all duration-700 flex items-center justify-end pr-2 text-[10px] font-extrabold text-white" style="width: 47%; background-color: #fb7185;">47%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Nudges -->
+            <div class="relative z-10 pt-4 border-t border-slate-200/70 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3">
+                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                    <i data-lucide="send" class="w-3.5 h-3.5 text-brand-500"></i>
+                    Quick Nudges to <strong id="nudge-target-label" class="text-slate-800 dark:text-slate-200">🔥 Sam</strong>:
+                </span>
+                <div class="flex flex-wrap items-center gap-2">
+                    <button onclick="sendQuickNudge('🔥', 'Time to lock in a workout and climb the XP board!')" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/20 transition transform active:scale-95">
+                        Send 🔥 Nudge
+                    </button>
+                    <button onclick="sendQuickNudge('💧', 'Hydration Check! Drink a glass of water right now!')" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-sky-500/10 hover:bg-sky-500/20 text-sky-600 dark:text-sky-400 border border-sky-500/20 transition transform active:scale-95">
+                        Hydration Check 💧
+                    </button>
+                    <button onclick="sendQuickNudge('⚡', 'Catching up to your XP—don’t slack!')" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-purple-500/10 hover:bg-purple-500/20 text-purple-600 dark:text-purple-400 border border-purple-500/20 transition transform active:scale-95">
+                        Catching Up ⚡
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Hero Section: Daily Vitals Rings & Live Workout Timer -->
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <!-- Daily Vitals (7 Cols) -->
+            <div class="lg:col-span-7 bg-white dark:bg-dark-800 rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800 shadow-sm flex flex-col justify-between">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 id="vitals-heading" class="font-display font-bold text-xl sm:text-2xl">Daily Vitals</h2>
+                        <p id="vitals-subheading" class="text-sm text-slate-500 dark:text-slate-400">Today's interactive targets</p>
+                    </div>
+                    <span id="overall-completion-badge" class="px-3 py-1 rounded-full text-xs font-bold bg-brand-500/10 text-brand-600 dark:text-brand-400 border border-brand-500/20">
+                        0% Complete
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 my-auto">
+                    <!-- Ring 1: Burn -->
+                    <div class="flex flex-col items-center p-4 rounded-2xl bg-slate-50 dark:bg-dark-900/60 border border-slate-100 dark:border-slate-800/80">
+                        <div class="relative w-28 h-28 flex items-center justify-center">
+                            <svg class="w-full h-full" viewBox="0 0 100 100">
+                                <circle class="text-rose-500/15 stroke-current" stroke-width="9" cx="50" cy="50" r="40" fill="transparent"></circle>
+                                <circle id="ring-calories" class="text-rose-500 progress-ring-circle stroke-current" stroke-width="9" stroke-linecap="round" cx="50" cy="50" r="40" fill="transparent" stroke-dasharray="251.2" stroke-dashoffset="251.2"></circle>
+                            </svg>
+                            <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                                <i data-lucide="flame" class="w-4 h-4 text-rose-500 mb-0.5"></i>
+                                <span id="val-calories" class="font-display font-bold text-base">0</span>
+                                <span class="text-[10px] text-slate-400 uppercase tracking-wider">/ 600 kcal</span>
+                            </div>
+                        </div>
+                        <div class="mt-3 flex items-center gap-2">
+                            <button onclick="quickAdjustVital('calories', -50)" class="w-7 h-7 rounded-lg bg-slate-200/70 dark:bg-dark-700 hover:bg-rose-500/20 hover:text-rose-500 flex items-center justify-center transition text-sm font-bold">-</button>
+                            <span class="text-xs font-semibold text-slate-600 dark:text-slate-300">Burn</span>
+                            <button onclick="quickAdjustVital('calories', 50)" class="w-7 h-7 rounded-lg bg-slate-200/70 dark:bg-dark-700 hover:bg-rose-500/20 hover:text-rose-500 flex items-center justify-center transition text-sm font-bold">+</button>
+                        </div>
+                    </div>
+
+                    <!-- Ring 2: Move -->
+                    <div class="flex flex-col items-center p-4 rounded-2xl bg-slate-50 dark:bg-dark-900/60 border border-slate-100 dark:border-slate-800/80">
+                        <div class="relative w-28 h-28 flex items-center justify-center">
+                            <svg class="w-full h-full" viewBox="0 0 100 100">
+                                <circle class="text-brand-500/15 stroke-current" stroke-width="9" cx="50" cy="50" r="40" fill="transparent"></circle>
+                                <circle id="ring-minutes" class="text-brand-500 progress-ring-circle stroke-current" stroke-width="9" stroke-linecap="round" cx="50" cy="50" r="40" fill="transparent" stroke-dasharray="251.2" stroke-dashoffset="251.2"></circle>
+                            </svg>
+                            <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                                <i data-lucide="timer" class="w-4 h-4 text-brand-500 mb-0.5"></i>
+                                <span id="val-minutes" class="font-display font-bold text-base">0</span>
+                                <span class="text-[10px] text-slate-400 uppercase tracking-wider">/ 45 mins</span>
+                            </div>
+                        </div>
+                        <div class="mt-3 flex items-center gap-2">
+                            <button onclick="quickAdjustVital('minutes', -5)" class="w-7 h-7 rounded-lg bg-slate-200/70 dark:bg-dark-700 hover:bg-brand-500/20 hover:text-brand-500 flex items-center justify-center transition text-sm font-bold">-</button>
+                            <span class="text-xs font-semibold text-slate-600 dark:text-slate-300">Move</span>
+                            <button onclick="quickAdjustVital('minutes', 5)" class="w-7 h-7 rounded-lg bg-slate-200/70 dark:bg-dark-700 hover:bg-brand-500/20 hover:text-brand-500 flex items-center justify-center transition text-sm font-bold">+</button>
+                        </div>
+                    </div>
+
+                    <!-- Ring 3: Hydrate -->
+                    <div class="flex flex-col items-center p-4 rounded-2xl bg-slate-50 dark:bg-dark-900/60 border border-slate-100 dark:border-slate-800/80">
+                        <div class="relative w-28 h-28 flex items-center justify-center">
+                            <svg class="w-full h-full" viewBox="0 0 100 100">
+                                <circle class="text-sky-500/15 stroke-current" stroke-width="9" cx="50" cy="50" r="40" fill="transparent"></circle>
+                                <circle id="ring-water" class="text-sky-500 progress-ring-circle stroke-current" stroke-width="9" stroke-linecap="round" cx="50" cy="50" r="40" fill="transparent" stroke-dasharray="251.2" stroke-dashoffset="251.2"></circle>
+                            </svg>
+                            <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                                <i data-lucide="droplets" class="w-4 h-4 text-sky-500 mb-0.5"></i>
+                                <span id="val-water" class="font-display font-bold text-base">0</span>
+                                <span class="text-[10px] text-slate-400 uppercase tracking-wider">/ 8 cups</span>
+                            </div>
+                        </div>
+                        <div class="mt-3 flex items-center gap-2">
+                            <button onclick="quickAdjustVital('water', -1)" class="w-7 h-7 rounded-lg bg-slate-200/70 dark:bg-dark-700 hover:bg-sky-500/20 hover:text-sky-500 flex items-center justify-center transition text-sm font-bold">-</button>
+                            <span class="text-xs font-semibold text-slate-600 dark:text-slate-300">Hydrate</span>
+                            <button onclick="quickAdjustVital('water', 1)" class="w-7 h-7 rounded-lg bg-slate-200/70 dark:bg-dark-700 hover:bg-sky-500/20 hover:text-sky-500 flex items-center justify-center transition text-sm font-bold">+</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live Workout Timer (5 Cols) -->
+            <div class="lg:col-span-5 bg-gradient-to-br from-slate-900 via-dark-800 to-slate-900 text-white rounded-3xl p-6 sm:p-8 border border-slate-800 shadow-xl flex flex-col justify-between relative overflow-hidden">
+                <div class="absolute -top-20 -right-20 w-48 h-48 bg-brand-500/20 rounded-full blur-3xl pointer-events-none"></div>
+
+                <div>
+                    <div class="flex items-center justify-between gap-2 mb-4">
+                        <span class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-brand-400 bg-brand-500/10 px-3 py-1 rounded-full border border-brand-500/20">
+                            <span class="w-2 h-2 rounded-full bg-brand-400 animate-ping"></span>
+                            Live Session
+                        </span>
+                        <select id="workout-type-select" onchange="updateLiveEstimate()" class="bg-slate-800/90 border border-slate-700 text-xs rounded-xl px-3 py-1.5 text-slate-200 focus:outline-none focus:border-brand-500">
+                            <option value="HIIT Cardio|12">HIIT Cardio (12 kcal/m)</option>
+                            <option value="Strength Training|8">Strength (8 kcal/m)</option>
+                            <option value="Running|11">Running (11 kcal/m)</option>
+                            <option value="Cycling|9">Cycling (9 kcal/m)</option>
+                            <option value="Yoga & Mobility|4">Yoga (4 kcal/m)</option>
+                        </select>
+                    </div>
+
+                    <!-- Solo vs Duo Bonus Pill in Couples Mode -->
+                    <div id="duo-bonus-toggle-wrap" class="hidden items-center justify-between bg-slate-800/70 border border-slate-700/80 rounded-2xl px-3.5 py-2 text-xs">
+                        <span class="text-slate-300 font-medium">Workout Mode:</span>
+                        <div class="inline-flex rounded-xl bg-slate-900 p-0.5">
+                            <button id="session-solo-btn" onclick="setSessionDuo(false)" class="px-2.5 py-1 rounded-lg font-bold transition">Solo</button>
+                            <button id="session-duo-btn" onclick="setSessionDuo(true)" class="px-2.5 py-1 rounded-lg font-bold transition">Duo (+25% XP)</button>
+                        </div>
+                    </div>
+
+                    <div class="my-6 text-center">
+                        <div id="timer-display" class="font-display font-extrabold text-5xl sm:text-6xl tracking-tight tabular-nums text-white">
+                            00:00
+                        </div>
+                        <p class="text-xs text-slate-400 mt-2">
+                            Est. Burn: <span id="live-est-calories" class="text-rose-400 font-semibold">0 kcal</span>
+                            <span id="live-est-xp-wrap" class="hidden"> • Est. XP: <span id="live-est-xp" class="text-brand-400 font-semibold">0 XP</span></span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-3">
+                    <button id="timer-start-btn" onclick="toggleTimer()" class="col-span-2 flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-400 text-slate-950 font-bold py-3.5 px-4 rounded-2xl transition transform active:scale-95 shadow-lg shadow-brand-500/25">
+                        <i data-lucide="play" class="w-5 h-5 fill-current"></i>
+                        <span id="timer-btn-text">Start Workout</span>
+                    </button>
+                    <button onclick="finishWorkoutSession()" class="flex items-center justify-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold py-3.5 px-3 rounded-2xl border border-slate-700 transition transform active:scale-95" title="Log Workout">
+                        <i data-lucide="check-circle-2" class="w-5 h-5 text-brand-400"></i>
+                        <span>Log</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Active Goals Section -->
+        <section class="space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h2 class="font-display font-bold text-xl sm:text-2xl">Active Fitness Goals</h2>
+                    <p class="text-sm text-slate-500 dark:text-slate-400">Increment progress or add a preset to build momentum</p>
+                </div>
+
+                <div class="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0" id="category-filters">
+                    <button onclick="filterGoals('all')" data-cat="all" class="filter-btn active px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-900 text-white dark:bg-white dark:text-slate-900 transition">All</button>
+                    <button onclick="filterGoals('Bodyweight')" data-cat="Bodyweight" class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-white dark:bg-dark-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-brand-500 transition">Bodyweight</button>
+                    <button onclick="filterGoals('Strength')" data-cat="Strength" class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-white dark:bg-dark-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-brand-500 transition">Strength</button>
+                    <button onclick="filterGoals('Cardio')" data-cat="Cardio" class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-white dark:bg-dark-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-brand-500 transition">Cardio</button>
+                    <button onclick="filterGoals('Habit')" data-cat="Habit" class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-white dark:bg-dark-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-brand-500 transition">Habits</button>
+                </div>
+            </div>
+
+            <!-- Quick-Add Presets -->
+            <div class="flex items-center gap-2 overflow-x-auto pb-1">
+                <span class="text-xs font-semibold text-slate-400 whitespace-nowrap flex items-center gap-1">
+                    <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-400"></i> Quick Add:
+                </span>
+                <button onclick="quickAddPreset('100 Sit-Ups Weekly Challenge', 'Bodyweight', 100, 'reps', 10)" class="whitespace-nowrap px-3 py-1.5 rounded-xl text-xs font-medium bg-brand-500/10 text-brand-600 dark:text-brand-400 border border-brand-500/20 hover:bg-brand-500 hover:text-white transition">
+                    + 100 Sit-Ups / Week
+                </button>
+                <button onclick="quickAddPreset('200 Squats Weekly Challenge', 'Bodyweight', 200, 'reps', 20)" class="whitespace-nowrap px-3 py-1.5 rounded-xl text-xs font-medium bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20 hover:bg-purple-500 hover:text-white transition">
+                    + 200 Squats / Week
+                </button>
+                <button onclick="quickAddPreset('150 Push-Ups Weekly Challenge', 'Bodyweight', 150, 'reps', 15)" class="whitespace-nowrap px-3 py-1.5 rounded-xl text-xs font-medium bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 hover:bg-amber-500 hover:text-white transition">
+                    + 150 Push-Ups / Week
+                </button>
+                <button onclick="quickAddPreset('15 Min Plank Weekly Total', 'Bodyweight', 15, 'mins', 2)" class="whitespace-nowrap px-3 py-1.5 rounded-xl text-xs font-medium bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20 hover:bg-sky-500 hover:text-white transition">
+                    + 15m Plank / Week
+                </button>
+            </div>
+
+            <!-- Goals Grid -->
+            <div id="goals-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+        </section>
+
+        <!-- COUPLES DUELS & CO-OP SECTION -->
+        <section id="couples-challenges-section" class="hidden grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Head-to-Head Duels -->
+            <div class="bg-white dark:bg-dark-800 rounded-3xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <span class="w-9 h-9 rounded-xl bg-rose-500/10 text-rose-500 flex items-center justify-center">
+                            <i data-lucide="swords" class="w-4 h-4"></i>
+                        </span>
+                        <div>
+                            <h3 class="font-display font-bold text-lg">Versus Duels</h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Race head-to-head to 100%</p>
+                        </div>
+                    </div>
+                </div>
+                <div id="duels-list" class="space-y-4"></div>
+            </div>
+
+            <!-- Co-Op Team Goals -->
+            <div class="bg-white dark:bg-dark-800 rounded-3xl p-6 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <span class="w-9 h-9 rounded-xl bg-brand-500/10 text-brand-500 flex items-center justify-center">
+                            <i data-lucide="handshake" class="w-4 h-4"></i>
+                        </span>
+                        <div>
+                            <h3 class="font-display font-bold text-lg">Co-Op Team Goals</h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Combine forces for shared rewards</p>
+                        </div>
+                    </div>
+                </div>
+                <div id="coop-list" class="space-y-4"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- New Goal Modal -->
+    <div id="goal-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/60 backdrop-blur-sm p-4">
+        <div class="bg-white dark:bg-dark-800 border border-slate-200 dark:border-slate-700 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 class="font-display font-bold text-lg">Create New Fitness Goal</h3>
+                <button onclick="closeGoalModal()" class="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-dark-700">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold mb-1">Goal Title</label>
+                    <input id="new-goal-title" type="text" placeholder="e.g., 500 Kettlebell Swings" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-dark-900 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:border-brand-500" />
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold mb-1">Category</label>
+                        <select id="new-goal-cat" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-dark-900 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:border-brand-500">
+                            <option value="Bodyweight">Bodyweight</option>
+                            <option value="Strength">Strength</option>
+                            <option value="Cardio">Cardio</option>
+                            <option value="Habit">Habit</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold mb-1">Target Value</label>
+                        <input id="new-goal-target" type="number" value="50" min="1" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-dark-900 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:border-brand-500" />
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold mb-1">Unit</label>
+                        <input id="new-goal-unit" type="text" value="reps" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-dark-900 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:border-brand-500" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold mb-1">Step Increment</label>
+                        <input id="new-goal-step" type="number" value="10" min="1" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-dark-900 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:border-brand-500" />
+                    </div>
+                </div>
+            </div>
+            <div class="flex justify-end gap-2 pt-2">
+                <button onclick="closeGoalModal()" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-dark-700">Cancel</button>
+                <button onclick="createGoalFromModal()" class="px-4 py-2 rounded-xl text-xs font-bold bg-brand-600 hover:bg-brand-500 text-white">Add Goal</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Couple Profiles Modal -->
+    <div id="couple-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/60 backdrop-blur-sm p-4">
+        <div class="bg-white dark:bg-dark-800 border border-slate-200 dark:border-slate-700 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 class="font-display font-bold text-lg">Couple Profiles &amp; Room</h3>
+                <button onclick="closeCoupleModal()" class="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-dark-700">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div class="space-y-3">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold mb-1">Partner A Name</label>
+                        <input id="edit-pA-name" type="text" class="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-dark-900 border border-slate-200 dark:border-slate-700 text-sm" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold mb-1">Partner A fallback emoji (optional)</label>
+                        <input id="edit-pA-avatar" type="text" value="⚡" class="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-dark-900 border border-slate-200 dark:border-slate-700 text-sm" aria-label="Partner A fallback emoji" />
+                        <div class="mt-2 grid grid-cols-4 gap-2" aria-label="Choose a boy or girl anime avatar">
+                            <button type="button" onclick="chooseAvatar('A','boy-shadow')" class="avatar-choice" aria-label="Boy avatar 1"><img src="assets/avatars/boy-shadow.webp" alt="Anime boy avatar" /></button>
+                            <button type="button" onclick="chooseAvatar('A','boy-sunrise')" class="avatar-choice" aria-label="Boy avatar 2"><img src="assets/avatars/boy-sunrise.webp" alt="Anime boy avatar" /></button>
+                            <button type="button" onclick="chooseAvatar('A','boy-silver')" class="avatar-choice" aria-label="Boy avatar 3"><img src="assets/avatars/boy-silver.webp" alt="Anime boy avatar" /></button>
+                            <button type="button" onclick="chooseAvatar('A','boy-amber')" class="avatar-choice" aria-label="Boy avatar 4"><img src="assets/avatars/boy-amber.webp" alt="Anime boy avatar" /></button>
+                            <button type="button" onclick="chooseAvatar('A','girl-midnight')" class="avatar-choice" aria-label="Girl avatar 1"><img src="assets/avatars/girl-midnight.webp" alt="Anime girl avatar" /></button>
+                            <button type="button" onclick="chooseAvatar('A','girl-rose')" class="avatar-choice" aria-label="Girl avatar 2"><img src="assets/avatars/girl-rose.webp" alt="Anime girl avatar" /></button>
+                            <button type="button" onclick="chooseAvatar('A','girl-lavender')" class="avatar-choice" aria-label="Girl avatar 3"><img src="assets/avatars/girl-lavender.webp" alt="Anime girl avatar" /></button>
+                            <button type="button" onclick="chooseAvatar('A','girl-teal')" class="avatar-choice" aria-label="Girl avatar 4"><img src="assets/avatars/girl-teal.webp" alt="Anime girl avatar" /></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold mb-1">Partner B Name</label>
+                        <input id="edit-pB-name" type="text" class="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-dark-900 border border-slate-200 dark:border-slate-700 text-sm" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold mb-1">Partner B fallback emoji (optional)</label>
+                        <input id="edit-pB-avatar" type="text" value="🔥" class="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-dark-900 border border-slate-200 dark:border-slate-700 text-sm" aria-label="Partner B fallback emoji" />
+                        <div class="mt-2 grid grid-cols-4 gap-2" aria-label="Choose a boy or girl anime avatar">
+                            <button type="button" onclick="chooseAvatar('B','boy-shadow')" class="avatar-choice" aria-label="Boy avatar 1"><img src="assets/avatars/boy-shadow.webp" alt="Anime boy avatar" /></button>
+                            <button type="button" onclick="chooseAvatar('B','boy-sunrise')" class="avatar-choice" aria-label="Boy avatar 2"><img src="assets/avatars/boy-sunrise.webp" alt="Anime boy avatar" /></button>
+                            <button type="button" onclick="chooseAvatar('B','boy-silver')" class="avatar-choice" aria-label="Boy avatar 3"><img src="assets/avatars/boy-silver.webp" alt="Anime boy avatar" /></button>
+                            <button type="button" onclick="chooseAvatar('B','boy-amber')" class="avatar-choice" aria-label="Boy avatar 4"><img src="assets/avatars/boy-amber.webp" alt="Anime boy avatar" /></button>
+                            <button type="button" onclick="chooseAvatar('B','girl-midnight')" class="avatar-choice" aria-label="Girl avatar 1"><img src="assets/avatars/girl-midnight.webp" alt="Anime girl avatar" /></button>
+                            <button type="button" onclick="chooseAvatar('B','girl-rose')" class="avatar-choice" aria-label="Girl avatar 2"><img src="assets/avatars/girl-rose.webp" alt="Anime girl avatar" /></button>
+                            <button type="button" onclick="chooseAvatar('B','girl-lavender')" class="avatar-choice" aria-label="Girl avatar 3"><img src="assets/avatars/girl-lavender.webp" alt="Anime girl avatar" /></button>
+                            <button type="button" onclick="chooseAvatar('B','girl-teal')" class="avatar-choice" aria-label="Girl avatar 4"><img src="assets/avatars/girl-teal.webp" alt="Anime girl avatar" /></button>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold mb-1">Couple Room Code</label>
+                    <input id="edit-room-code" type="text" class="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-dark-900 border border-slate-200 dark:border-slate-700 text-sm font-mono uppercase" />
+                </div>
+            </div>
+            <div class="flex justify-end gap-2 pt-2">
+                <button onclick="closeCoupleModal()" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-dark-700">Cancel</button>
+                <button onclick="saveCoupleProfiles()" class="px-4 py-2 rounded-xl text-xs font-bold bg-brand-600 hover:bg-brand-500 text-white">Save Profiles</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'fitness_era_apk_v1';
+
+        const defaultState = {
+            appMode: 'individual',
+            activePartner: 'A',
+            streak: 12,
+            coupleProfile: {
+                A: { name: 'Alex', avatar: '⚡', avatarId: 'boy-shadow', color: '#38bdf8', xp: 1240 },
+                B: { name: 'Sam', avatar: '🔥', avatarId: 'girl-rose', color: '#fb7185', xp: 1120 },
+                weeklyStakes: 'Loser cooks Friday dinner & gives a 20-min massage',
+                roomCode: 'ERA-8492'
+            },
+            vitals: {
+                calories: { current: 250, target: 600 },
+                minutes: { current: 20, target: 45 },
+                water: { current: 4, target: 8 }
+            },
+            goals: [
+                { id: 'g1', title: '100 Push-Ups Weekly Challenge', category: 'Bodyweight', current: 45, target: 100, unit: 'reps', step: 15 },
+                { id: 'g2', title: '5K Cardio Run', category: 'Cardio', current: 3.0, target: 5.0, unit: 'km', step: 1.0 },
+                { id: 'g3', title: 'Strength Sets Log', category: 'Strength', current: 8, target: 12, unit: 'sets', step: 2 }
+            ],
+            duels: [
+                { id: 'd1', title: '100 Push-Up Sprint', unit: 'reps', target: 100, pA: 65, pB: 75, reward: '+150 Bonus XP' },
+                { id: 'd2', title: '5K Cardio Distance', unit: 'km', target: 5, pA: 3.5, pB: 3.0, reward: 'Winner Picks Movie Night' }
+            ],
+            coopGoals: [
+                { id: 'c1', title: 'Weekend 1,000 XP Club', unit: 'XP', target: 1000, pA: 380, pB: 340, reward: 'Brunch & Spa Evening' },
+                { id: 'c2', title: 'Hydration Harmony', unit: 'glasses', target: 16, pA: 6, pB: 7, reward: 'Smoothie Bowl Date' }
+            ],
+            activeCategory: 'all',
+            sessionDuo: true
+        };
+
+        let state = loadState();
+        ['A','B'].forEach(key => {
+            state.coupleProfile[key] = { ...defaultState.coupleProfile[key], ...(state.coupleProfile?.[key] || {}) };
+        });
+        let timerSeconds = 0;
+        let timerInterval = null;
+
+        function loadState() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                return raw ? { ...defaultState, ...JSON.parse(raw) } : structuredClone(defaultState);
+            } catch {
+                return structuredClone(defaultState);
+            }
+        }
+
+        function saveState() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+            } catch {}
+        }
+
+        function showToast(title, message, icon = 'sparkles') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'bg-slate-900 text-white border border-slate-700/80 shadow-xl rounded-2xl px-4 py-3 flex items-start gap-3 transition-all duration-300';
+            toast.innerHTML = `
+                <div class="w-8 h-8 rounded-xl bg-brand-500/20 text-brand-400 flex items-center justify-center shrink-0 mt-0.5">
+                    <i data-lucide="${icon}" class="w-4 h-4"></i>
+                </div>
+                <div class="text-xs">
+                    <div class="font-bold">${title}</div>
+                    <div class="text-slate-300 mt-0.5">${message}</div>
+                </div>
+            `;
+            container.appendChild(toast);
+            lucide.createIcons();
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 3200);
+        }
+
+        async function shareFitnessEraApp() {
+            const roomCode = state.coupleProfile?.roomCode || 'ERA-8492';
+            const shareUrl = window.location.protocol.startsWith('http')
+                ? window.location.href
+                : 'https://fitnessera.app';
+
+            const shareData = {
+                title: 'My Fitness Era / Our Fitness Era',
+                text: `Join me on Fitness Era! Switch between Individual & Couples Mode and use Room Code ${roomCode} to team up or compete:`,
+                url: shareUrl
+            };
+
+            if (navigator.share) {
+                try {
+                    await navigator.share(shareData);
+                    return;
+                } catch (err) {
+                    if (err.name === 'AbortError') return;
+                }
+            }
+
+            const fallbackText = `${shareData.text} ${shareData.url}`;
+            try {
+                await navigator.clipboard.writeText(fallbackText);
+                showToast('Invite Copied!', `Room Code ${roomCode} & app link copied to clipboard.`, 'share-2');
+            } catch {
+                prompt('Copy and share this invite:', fallbackText);
+            }
+        }
+
+        function triggerConfetti() {
+            if (typeof confetti === 'function') {
+                confetti({ particleCount: 70, spread: 65, origin: { y: 0.65 } });
+            }
+        }
+
+        function toggleTheme() {
+            document.documentElement.classList.toggle('dark');
+            lucide.createIcons();
+        }
+
+        function switchAppMode(mode) {
+            state.appMode = mode;
+            saveState();
+            renderAll();
+            showToast(
+                mode === 'couples' ? 'Couples Mode Activated' : 'Individual Mode Activated',
+                mode === 'couples' ? 'Head-to-head XP, duels & co-op goals enabled.' : 'Focused solo tracking enabled.'
+            );
+        }
+
+        function setActivePartner(partner) {
+            state.activePartner = partner;
+            saveState();
+            renderAll();
+        }
+
+        function setSessionDuo(isDuo) {
+            state.sessionDuo = isDuo;
+            saveState();
+            renderTimerModeButtons();
+            updateLiveEstimate();
+        }
+
+        function quickAdjustVital(type, delta) {
+            const v = state.vitals[type];
+            v.current = Math.max(0, v.current + delta);
+            if (state.appMode === 'couples' && delta > 0) {
+                const p = state.coupleProfile[state.activePartner];
+                p.xp += type === 'calories' ? 15 : 10;
+            }
+            saveState();
+            renderVitals();
+            renderCouplesArena();
+        }
+
+        function toggleTimer() {
+            const btnText = document.getElementById('timer-btn-text');
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                btnText.textContent = 'Resume';
+            } else {
+                btnText.textContent = 'Pause';
+                timerInterval = setInterval(() => {
+                    timerSeconds++;
+                    renderTimerDisplay();
+                    updateLiveEstimate();
+                }, 1000);
+            }
+        }
+
+        function renderTimerDisplay() {
+            const mins = String(Math.floor(timerSeconds / 60)).padStart(2, '0');
+            const secs = String(timerSeconds % 60).padStart(2, '0');
+            document.getElementById('timer-display').textContent = `${mins}:${secs}`;
+        }
+
+        function updateLiveEstimate() {
+            const [, rateStr] = document.getElementById('workout-type-select').value.split('|');
+            const rate = Number(rateStr) || 8;
+            const mins = timerSeconds / 60;
+            const estKcal = Math.round(mins * rate);
+            document.getElementById('live-est-calories').textContent = `${estKcal} kcal`;
+
+            const baseXp = Math.round(mins * 20);
+            const finalXp = state.appMode === 'couples' && state.sessionDuo ? Math.round(baseXp * 1.25) : baseXp;
+            document.getElementById('live-est-xp').textContent = `${finalXp} XP`;
+        }
+
+        function finishWorkoutSession() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+            const mins = Math.max(1, Math.round(timerSeconds / 60));
+            const [name, rateStr] = document.getElementById('workout-type-select').value.split('|');
+            const rate = Number(rateStr) || 8;
+            const burned = mins * rate;
+
+            state.vitals.calories.current += burned;
+            state.vitals.minutes.current += mins;
+
+            if (state.appMode === 'couples') {
+                const p = state.coupleProfile[state.activePartner];
+                const mult = state.sessionDuo ? 1.25 : 1;
+                const earnedXp = Math.round(mins * 20 * mult);
+                p.xp += earnedXp;
+                showToast('Workout Logged!', `${p.name} earned +${earnedXp} XP & burned ${burned} kcal in ${name}.`, 'trophy');
+            } else {
+                showToast('Workout Logged!', `Added ${mins} mins and ${burned} kcal from ${name}.`, 'check-circle-2');
+            }
+
+            timerSeconds = 0;
+            renderTimerDisplay();
+            updateLiveEstimate();
+            document.getElementById('timer-btn-text').textContent = 'Start Workout';
+            saveState();
+            renderVitals();
+            renderCouplesArena();
+        }
+
+        function filterGoals(cat) {
+            state.activeCategory = cat;
+            document.querySelectorAll('.filter-btn').forEach((btn) => {
+                const active = btn.dataset.cat === cat;
+                btn.className = active
+                    ? 'filter-btn active px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-900 text-white dark:bg-white dark:text-slate-900 transition'
+                    : 'filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-white dark:bg-dark-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-brand-500 transition';
+            });
+            renderGoals();
+        }
+
+        function quickAddPreset(title, category, target, unit, step) {
+            state.goals.unshift({
+                id: 'g-' + Date.now(),
+                title,
+                category,
+                current: 0,
+                target,
+                unit,
+                step
+            });
+            saveState();
+            renderGoals();
+            showToast('Goal Added', title, 'zap');
+        }
+
+        function incrementGoal(id) {
+            const g = state.goals.find((item) => item.id === id);
+            if (!g) return;
+            const prev = g.current;
+            g.current = Math.min(g.target, Number((g.current + g.step).toFixed(2)));
+            if (prev < g.target && g.current >= g.target) {
+                triggerConfetti();
+                showToast('Goal Completed!', `You crushed "${g.title}"!`, 'award');
+            }
+            if (state.appMode === 'couples') {
+                state.coupleProfile[state.activePartner].xp += 25;
+            }
+            saveState();
+            renderGoals();
+            renderCouplesArena();
+        }
+
+        function deleteGoal(id) {
+            state.goals = state.goals.filter((item) => item.id !== id);
+            saveState();
+            renderGoals();
+        }
+
+        function openGoalModal() {
+            const m = document.getElementById('goal-modal');
+            m.classList.remove('hidden');
+            m.classList.add('flex');
+        }
+
+        function closeGoalModal() {
+            const m = document.getElementById('goal-modal');
+            m.classList.add('hidden');
+            m.classList.remove('flex');
+        }
+
+        function createGoalFromModal() {
+            const title = document.getElementById('new-goal-title').value.trim();
+            const category = document.getElementById('new-goal-cat').value;
+            const target = Math.max(1, Number(document.getElementById('new-goal-target').value) || 50);
+            const unit = document.getElementById('new-goal-unit').value.trim() || 'reps';
+            const step = Math.max(1, Number(document.getElementById('new-goal-step').value) || 10);
+            if (!title) return;
+
+            state.goals.unshift({ id: 'g-' + Date.now(), title, category, current: 0, target, unit, step });
+            document.getElementById('new-goal-title').value = '';
+            closeGoalModal();
+            saveState();
+            renderGoals();
+            showToast('New Goal Created', title, 'plus-circle');
+        }
+
+        function toggleEditStakes(editing) {
+            document.getElementById('stakes-display-wrap').classList.toggle('hidden', editing);
+            const editWrap = document.getElementById('stakes-edit-wrap');
+            editWrap.classList.toggle('hidden', !editing);
+            editWrap.classList.toggle('flex', editing);
+            if (editing) {
+                document.getElementById('stakes-input').value = state.coupleProfile.weeklyStakes;
+            }
+        }
+
+        function saveStakes() {
+            const val = document.getElementById('stakes-input').value.trim();
+            if (val) {
+                state.coupleProfile.weeklyStakes = val;
+                saveState();
+            }
+            toggleEditStakes(false);
+            renderCouplesArena();
+        }
+
+        function sendQuickNudge(emoji, msg) {
+            const otherKey = state.activePartner === 'A' ? 'B' : 'A';
+            const sender = state.coupleProfile[state.activePartner];
+            const receiver = state.coupleProfile[otherKey];
+            showToast(`${emoji} Nudge from ${sender.name} to ${receiver.name}`, msg, 'send');
+        }
+
+        function stepDuel(id, partnerKey) {
+            const d = state.duels.find((item) => item.id === id);
+            if (!d) return;
+            const inc = d.unit === 'km' ? 0.5 : 10;
+            if (partnerKey === 'A') d.pA = Math.min(d.target, Number((d.pA + inc).toFixed(2)));
+            else d.pB = Math.min(d.target, Number((d.pB + inc).toFixed(2)));
+            state.coupleProfile[partnerKey].xp += 20;
+            saveState();
+            renderCouplesChallenges();
+            renderCouplesArena();
+        }
+
+        function stepCoop(id, partnerKey) {
+            const c = state.coopGoals.find((item) => item.id === id);
+            if (!c) return;
+            const inc = c.unit === 'XP' ? 60 : 1;
+            if (partnerKey === 'A') c.pA += inc;
+            else c.pB += inc;
+            state.coupleProfile[partnerKey].xp += 15;
+            if (c.pA + c.pB >= c.target) {
+                triggerConfetti();
+                showToast('Co-Op Goal Unlocked!', `${c.title} — Reward: ${c.reward}`, 'sparkles');
+            }
+            saveState();
+            renderCouplesChallenges();
+            renderCouplesArena();
+        }
+
+
+        const AVATAR_FILES = {
+            'boy-shadow':'boy-shadow.webp', 'boy-sunrise':'boy-sunrise.webp', 'boy-silver':'boy-silver.webp', 'boy-amber':'boy-amber.webp',
+            'girl-midnight':'girl-midnight.webp', 'girl-rose':'girl-rose.webp', 'girl-lavender':'girl-lavender.webp', 'girl-teal':'girl-teal.webp'
+        };
+        function chooseAvatar(partner, avatarId) {
+            if (!AVATAR_FILES[avatarId]) return;
+            state.coupleProfile[partner].avatarId = avatarId;
+            renderAll();
+            document.querySelectorAll(`#couple-modal button[onclick^="chooseAvatar('${partner}'"]`).forEach(btn => {
+                const selected = btn.getAttribute('onclick').includes(`'${avatarId}'`);
+                btn.style.borderColor = selected ? '#22c55e' : 'rgba(148,163,184,.28)';
+                btn.style.boxShadow = selected ? '0 0 0 2px rgba(34,197,94,.2)' : 'none';
+            });
+        }
+        function renderAvatar(id, profile) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            const file = AVATAR_FILES[profile.avatarId];
+            if (file) el.innerHTML = `<img class="profile-avatar-img" src="assets/avatars/${file}" alt="${profile.name} anime avatar">`;
+            else el.textContent = profile.avatar || '⭐';
+        }
+
+        function openCoupleModal() {
+            document.getElementById('edit-pA-name').value = state.coupleProfile.A.name;
+            document.getElementById('edit-pA-avatar').value = state.coupleProfile.A.avatar;
+            document.getElementById('edit-pB-name').value = state.coupleProfile.B.name;
+            document.getElementById('edit-pB-avatar').value = state.coupleProfile.B.avatar;
+            document.getElementById('edit-room-code').value = state.coupleProfile.roomCode;
+            const m = document.getElementById('couple-modal');
+            m.classList.remove('hidden');
+            m.classList.add('flex');
+            ['A','B'].forEach(partner => {
+                const selectedId = state.coupleProfile[partner].avatarId;
+                document.querySelectorAll(`#couple-modal button[onclick^="chooseAvatar('${partner}'"]`).forEach(btn => {
+                    const selected = !!selectedId && btn.getAttribute('onclick').includes(`'${selectedId}'`);
+                    btn.style.borderColor = selected ? '#22c55e' : 'rgba(148,163,184,.28)';
+                    btn.style.boxShadow = selected ? '0 0 0 2px rgba(34,197,94,.2)' : 'none';
+                });
+            });
+        }
+
+        function closeCoupleModal() {
+            const m = document.getElementById('couple-modal');
+            m.classList.add('hidden');
+            m.classList.remove('flex');
+        }
+
+        function saveCoupleProfiles() {
+            state.coupleProfile.A.name = document.getElementById('edit-pA-name').value.trim() || 'Alex';
+            state.coupleProfile.A.avatar = document.getElementById('edit-pA-avatar').value.trim() || '⚡';
+            state.coupleProfile.B.name = document.getElementById('edit-pB-name').value.trim() || 'Sam';
+            state.coupleProfile.B.avatar = document.getElementById('edit-pB-avatar').value.trim() || '🔥';
+            state.coupleProfile.roomCode = document.getElementById('edit-room-code').value.trim().toUpperCase() || 'ERA-8492';
+            closeCoupleModal();
+            saveState();
+            renderAll();
+            showToast('Profiles Updated', 'Couple names, avatars & room code saved.', 'users');
+        }
+
+        function renderHeaderAndMode() {
+            const isCouples = state.appMode === 'couples';
+            const indBtn = document.getElementById('mode-btn-individual');
+            const coupBtn = document.getElementById('mode-btn-couples');
+
+            indBtn.className = !isCouples
+                ? 'flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-sm transition-all'
+                : 'flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-all';
+
+            coupBtn.className = isCouples
+                ? 'flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold bg-rose-500 text-white shadow-sm transition-all'
+                : 'flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-all';
+
+            document.getElementById('brand-title').innerHTML = isCouples
+                ? `Our Fitness <span class="text-rose-500">Era</span>`
+                : `My Fitness <span class="text-brand-500">Era</span>`;
+
+            document.getElementById('partner-switcher-wrap').classList.toggle('hidden', !isCouples);
+            document.getElementById('partner-switcher-wrap').classList.toggle('flex', isCouples);
+            document.getElementById('couple-profiles-btn').classList.toggle('hidden', !isCouples);
+            document.getElementById('room-sync-badge').classList.toggle('hidden', !isCouples);
+            document.getElementById('room-sync-badge').classList.toggle('inline-flex', isCouples);
+            document.getElementById('room-sync-label').textContent = state.coupleProfile.roomCode;
+            document.getElementById('individual-couples-banner').classList.toggle('hidden', isCouples);
+            document.getElementById('couples-showdown-section').classList.toggle('hidden', !isCouples);
+            document.getElementById('couples-challenges-section').classList.toggle('hidden', !isCouples);
+            document.getElementById('couples-challenges-section').classList.toggle('grid', isCouples);
+            document.getElementById('duo-bonus-toggle-wrap').classList.toggle('hidden', !isCouples);
+            document.getElementById('duo-bonus-toggle-wrap').classList.toggle('flex', isCouples);
+            document.getElementById('live-est-xp-wrap').classList.toggle('hidden', !isCouples);
+            document.getElementById('streak-label').textContent = isCouples ? 'Duo Streak' : 'Day Streak';
+
+            const { A, B } = state.coupleProfile;
+            renderAvatar('header-avatar-A', A);
+            document.getElementById('header-name-A').textContent = A.name;
+            renderAvatar('header-avatar-B', B);
+            document.getElementById('header-name-B').textContent = B.name;
+
+            const btnA = document.getElementById('switch-btn-A');
+            const btnB = document.getElementById('switch-btn-B');
+            btnA.className = state.activePartner === 'A'
+                ? 'flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-sky-500 text-slate-950 shadow-sm transition-all'
+                : 'flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-slate-500 dark:text-slate-400 transition-all';
+            btnB.className = state.activePartner === 'B'
+                ? 'flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-rose-500 text-white shadow-sm transition-all'
+                : 'flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-slate-500 dark:text-slate-400 transition-all';
+
+            renderTimerModeButtons();
+        }
+
+        function renderTimerModeButtons() {
+            const soloBtn = document.getElementById('session-solo-btn');
+            const duoBtn = document.getElementById('session-duo-btn');
+            if (!soloBtn || !duoBtn) return;
+            soloBtn.className = !state.sessionDuo
+                ? 'px-2.5 py-1 rounded-lg font-bold bg-slate-700 text-white transition'
+                : 'px-2.5 py-1 rounded-lg font-bold text-slate-400 transition';
+            duoBtn.className = state.sessionDuo
+                ? 'px-2.5 py-1 rounded-lg font-bold bg-brand-500 text-slate-950 transition'
+                : 'px-2.5 py-1 rounded-lg font-bold text-slate-400 transition';
+        }
+
+        function renderCouplesArena() {
+            if (state.appMode !== 'couples') return;
+            const { A, B, weeklyStakes } = state.coupleProfile;
+            document.getElementById('arena-name-A').textContent = A.name;
+            renderAvatar('arena-avatar-A', A);
+            document.getElementById('xp-A').textContent = `${A.xp.toLocaleString()} XP`;
+
+            document.getElementById('arena-name-B').textContent = B.name;
+            renderAvatar('arena-avatar-B', B);
+            document.getElementById('xp-B').textContent = `${B.xp.toLocaleString()} XP`;
+
+            document.getElementById('stakes-text').textContent = weeklyStakes;
+            const other = state.activePartner === 'A' ? B : A;
+            document.getElementById('nudge-target-label').textContent = `${other.avatar} ${other.name}`;
+
+            const diff = A.xp - B.xp;
+            const headline = document.getElementById('arena-leader-headline');
+            const crownA = document.getElementById('crown-A');
+            const crownB = document.getElementById('crown-B');
+            if (diff > 0) {
+                headline.textContent = `${A.name} leads by ${diff.toLocaleString()} XP!`;
+                crownA.classList.remove('hidden');
+                crownB.classList.add('hidden');
+            } else if (diff < 0) {
+                headline.textContent = `${B.name} leads by ${Math.abs(diff).toLocaleString()} XP!`;
+                crownB.classList.remove('hidden');
+                crownA.classList.add('hidden');
+            } else {
+                headline.textContent = `Neck & Neck — Tied at ${A.xp.toLocaleString()} XP!`;
+                crownA.classList.remove('hidden');
+                crownB.classList.remove('hidden');
+            }
+
+            const total = Math.max(1, A.xp + B.xp);
+            const pctA = Math.round((A.xp / total) * 100);
+            const pctB = 100 - pctA;
+            const barA = document.getElementById('tug-bar-A');
+            const barB = document.getElementById('tug-bar-B');
+            barA.style.width = `${pctA}%`;
+            barA.textContent = `${pctA}%`;
+            barB.style.width = `${pctB}%`;
+            barB.textContent = `${pctB}%`;
+        }
+
+        function setRing(id, current, target) {
+            const circ = 251.2;
+            const ratio = Math.min(1, Math.max(0, current / Math.max(1, target)));
+            document.getElementById(id).style.strokeDashoffset = circ - ratio * circ;
+        }
+
+        function renderVitals() {
+            const { calories, minutes, water } = state.vitals;
+            document.getElementById('val-calories').textContent = calories.current;
+            document.getElementById('val-minutes').textContent = minutes.current;
+            document.getElementById('val-water').textContent = water.current;
+
+            setRing('ring-calories', calories.current, calories.target);
+            setRing('ring-minutes', minutes.current, minutes.target);
+            setRing('ring-water', water.current, water.target);
+
+            const avg = Math.round(
+                ((Math.min(1, calories.current / calories.target) +
+                    Math.min(1, minutes.current / minutes.target) +
+                    Math.min(1, water.current / water.target)) /
+                    3) *
+                    100
+            );
+            document.getElementById('overall-completion-badge').textContent = `${avg}% Complete`;
+
+            if (state.appMode === 'couples') {
+                const active = state.coupleProfile[state.activePartner];
+                document.getElementById('vitals-heading').textContent = `Daily Vitals • ${active.avatar} ${active.name}`;
+            } else {
+                document.getElementById('vitals-heading').textContent = 'Daily Vitals';
+            }
+        }
+
+        function renderGoals() {
+            const grid = document.getElementById('goals-grid');
+            const list = state.activeCategory === 'all'
+                ? state.goals
+                : state.goals.filter((g) => g.category === state.activeCategory);
+
+            if (!list.length) {
+                grid.innerHTML = `<div class="col-span-full text-center py-8 text-sm text-slate-400">No goals in this category yet. Click "+ New Goal" or a preset above!</div>`;
+                return;
+            }
+
+            grid.innerHTML = list.map((g) => {
+                const pct = Math.min(100, Math.round((g.current / Math.max(1, g.target)) * 100));
+                const done = pct >= 100;
+                return `
+                    <div class="bg-white dark:bg-dark-800 rounded-2xl p-5 border ${done ? 'border-brand-500/50' : 'border-slate-200/80 dark:border-slate-800'} shadow-sm flex flex-col justify-between gap-4">
+                        <div class="flex items-start justify-between gap-2">
+                            <div>
+                                <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-slate-100 dark:bg-dark-700 text-slate-500 dark:text-slate-300">${g.category}</span>
+                                <h3 class="font-display font-bold text-base mt-1.5">${g.title}</h3>
+                            </div>
+                            <button onclick="deleteGoal('${g.id}')" class="text-slate-400 hover:text-rose-500 transition p-1" title="Delete Goal">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="flex justify-between text-xs font-semibold">
+                                <span>${g.current} / ${g.target} ${g.unit}</span>
+                                <span class="text-brand-500">${pct}%</span>
+                            </div>
+                            <div class="w-full h-2.5 rounded-full bg-slate-100 dark:bg-dark-900 overflow-hidden">
+                                <div class="h-full rounded-full bg-brand-500 transition-all duration-500" style="width:${pct}%"></div>
+                            </div>
+                        </div>
+                        <button onclick="incrementGoal('${g.id}')" class="w-full py-2 rounded-xl text-xs font-bold ${done ? 'bg-brand-500/15 text-brand-500' : 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:opacity-90'} transition">
+                            ${done ? 'Completed ✓ (+25 XP)' : `+${g.step} ${g.unit}`}
+                        </button>
+                    </div>
+                `;
+            }).join('');
+            lucide.createIcons();
+        }
+
+        function renderCouplesChallenges() {
+            if (state.appMode !== 'couples') return;
+            const { A, B } = state.coupleProfile;
+
+            document.getElementById('duels-list').innerHTML = state.duels.map((d) => {
+                const pctA = Math.min(100, Math.round((d.pA / d.target) * 100));
+                const pctB = Math.min(100, Math.round((d.pB / d.target) * 100));
+                return `
+                    <div class="p-4 rounded-2xl bg-slate-50 dark:bg-dark-900/70 border border-slate-200/70 dark:border-slate-800 space-y-3">
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="font-bold text-sm">${d.title}</span>
+                            <span class="text-[11px] font-semibold text-amber-500 bg-amber-500/10 px-2.5 py-0.5 rounded-full">${d.reward}</span>
+                        </div>
+                        <div class="space-y-1.5 text-xs">
+                            <div class="flex justify-between"><span>${A.avatar} ${A.name}: <strong>${d.pA}/${d.target} ${d.unit}</strong></span><span>${pctA}%</span></div>
+                            <div class="w-full h-2 rounded-full bg-slate-200 dark:bg-dark-800 overflow-hidden"><div class="h-full bg-sky-400" style="width:${pctA}%"></div></div>
+                            <div class="flex justify-between"><span>${B.avatar} ${B.name}: <strong>${d.pB}/${d.target} ${d.unit}</strong></span><span>${pctB}%</span></div>
+                            <div class="w-full h-2 rounded-full bg-slate-200 dark:bg-dark-800 overflow-hidden"><div class="h-full bg-rose-400" style="width:${pctB}%"></div></div>
+                        </div>
+                        <div class="flex gap-2 pt-1">
+                            <button onclick="stepDuel('${d.id}','A')" class="flex-1 py-1.5 rounded-xl text-xs font-bold bg-sky-500/15 text-sky-400 hover:bg-sky-500/25 transition">+ ${A.name}</button>
+                            <button onclick="stepDuel('${d.id}','B')" class="flex-1 py-1.5 rounded-xl text-xs font-bold bg-rose-500/15 text-rose-400 hover:bg-rose-500/25 transition">+ ${B.name}</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('coop-list').innerHTML = state.coopGoals.map((c) => {
+                const sum = c.pA + c.pB;
+                const pct = Math.min(100, Math.round((sum / Math.max(1, c.target)) * 100));
+                return `
+                    <div class="p-4 rounded-2xl bg-slate-50 dark:bg-dark-900/70 border border-slate-200/70 dark:border-slate-800 space-y-3">
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="font-bold text-sm">${c.title}</span>
+                            <span class="text-[11px] font-semibold text-brand-500 bg-brand-500/10 px-2.5 py-0.5 rounded-full">${c.reward}</span>
+                        </div>
+                        <div class="flex justify-between text-xs font-semibold">
+                            <span>Combined: ${sum} / ${c.target} ${c.unit} (${A.name} ${c.pA} + ${B.name} ${c.pB})</span>
+                            <span>${pct}%</span>
+                        </div>
+                        <div class="w-full h-2.5 rounded-full bg-slate-200 dark:bg-dark-800 overflow-hidden">
+                            <div class="h-full bg-brand-500 transition-all duration-500" style="width:${pct}%"></div>
+                        </div>
+                        <div class="flex gap-2 pt-1">
+                            <button onclick="stepCoop('${c.id}','A')" class="flex-1 py-1.5 rounded-xl text-xs font-bold bg-sky-500/15 text-sky-400 hover:bg-sky-500/25 transition">+ ${A.name} Contributes</button>
+                            <button onclick="stepCoop('${c.id}','B')" class="flex-1 py-1.5 rounded-xl text-xs font-bold bg-rose-500/15 text-rose-400 hover:bg-rose-500/25 transition">+ ${B.name} Contributes</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateNetworkBadge() {
+            const badge = document.getElementById('net-status-badge');
+            if (!badge) return;
+            const online = navigator.onLine;
+            badge.className = online
+                ? 'hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20'
+                : 'hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-500/10 text-amber-500 border border-amber-500/20';
+            badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full ${online ? 'bg-emerald-500' : 'bg-amber-500'}"></span> ${online ? 'Online' : 'Offline'}`;
+        }
+
+        function initPwaAndOffline() {
+            const svgIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="112" fill="#090d16"/><path d="M120 276h68l36-96 64 168 40-108h64" fill="none" stroke="#22c55e" stroke-width="36" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+            const iconUrl = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgIcon);
+
+            const manifest = {
+                name: 'My Fitness Era / Our Fitness Era',
+                short_name: 'Fitness Era',
+                description: 'Individual & Couples interactive fitness tracker and showdown arena.',
+                start_url: './',
+                display: 'standalone',
+                background_color: '#090d16',
+                theme_color: '#090d16',
+                icons: [
+                    { src: iconUrl, sizes: '192x192', type: 'image/svg+xml', purpose: 'any maskable' },
+                    { src: iconUrl, sizes: '512x512', type: 'image/svg+xml', purpose: 'any maskable' }
+                ]
+            };
+
+            const manifestBlob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
+            const manifestLink = document.createElement('link');
+            manifestLink.rel = 'manifest';
+            manifestLink.href = URL.createObjectURL(manifestBlob);
+            document.head.appendChild(manifestLink);
+
+            if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
+                const swCode = `
+                    const CACHE_NAME = 'fitness-era-cache-v1';
+                    self.addEventListener('install', (e) => {
+                        self.skipWaiting();
+                    });
+                    self.addEventListener('activate', (e) => {
+                        e.waitUntil(self.clients.claim());
+                    });
+                    self.addEventListener('fetch', (e) => {
+                        if (e.request.method !== 'GET') return;
+                        e.respondWith(
+                            caches.open(CACHE_NAME).then(async (cache) => {
+                                const cached = await cache.match(e.request);
+                                const fetched = fetch(e.request).then((res) => {
+                                    if (res && res.status === 200) cache.put(e.request, res.clone());
+                                    return res;
+                                }).catch(() => cached);
+                                return cached || fetched;
+                            })
+                        );
+                    });
+                `;
+                const swBlob = new Blob([swCode], { type: 'application/javascript' });
+                navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(() => {});
+            }
+        }
+
+        function renderAll() {
+            renderHeaderAndMode();
+            renderCouplesArena();
+            renderVitals();
+            renderGoals();
+            renderCouplesChallenges();
+            updateLiveEstimate();
+            updateNetworkBadge();
+            lucide.createIcons();
+        }
+
+        window.addEventListener('online', updateNetworkBadge);
+        window.addEventListener('offline', updateNetworkBadge);
+
+        initPwaAndOffline();
+        renderAll();
+    </script>
+</body>
+</html>
